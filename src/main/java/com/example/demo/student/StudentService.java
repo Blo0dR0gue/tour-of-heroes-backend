@@ -37,7 +37,7 @@ public class StudentService {
         studentRepository.deleteById(id);
     }
 
-    //Man muss sich nicht um die update geschichte kümmern. Es reicht das setValue.
+    //Man muss sich nicht um die update Geschichte kümmern. Es reicht das setValue.
     @Transactional
     public void updateStudent(Long id, String name, String email) {
         Student student = studentRepository.findById(id).orElseThrow(() -> new IllegalStateException("student does not exists"));
