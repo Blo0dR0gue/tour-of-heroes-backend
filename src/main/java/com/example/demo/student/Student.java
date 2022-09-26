@@ -1,7 +1,5 @@
 package com.example.demo.student;
 
-import org.springframework.boot.context.properties.bind.DefaultValue;
-
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.Period;
