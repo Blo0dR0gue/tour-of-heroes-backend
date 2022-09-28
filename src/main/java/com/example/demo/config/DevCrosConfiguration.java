@@ -10,7 +10,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class DevCrosConfiguration implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("http://localhost:4200")
+        registry.addMapping("/api/v1/**")
+                .allowedOrigins("http://localhost:4200")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .exposedHeaders("Authorization");
     }
