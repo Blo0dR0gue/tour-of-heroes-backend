@@ -15,7 +15,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,
             HttpStatus status, WebRequest request) {
         return buildErrorResponse(ex,
-                String.format("Could not found the %s method for URL $s", ex.getHttpMethod(), ex.getRequestURL()),
+                String.format("Could not found the %s method for URL %s", ex.getHttpMethod(), ex.getRequestURL()),
                 HttpStatus.BAD_REQUEST);
     }
     /**
