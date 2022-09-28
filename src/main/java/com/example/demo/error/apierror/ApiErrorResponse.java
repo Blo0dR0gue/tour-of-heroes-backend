@@ -1,8 +1,9 @@
-package com.example.demo.error;
+package com.example.demo.error.apierror;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.demo.error.resolver.LowerCaseClassNameResolver;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;

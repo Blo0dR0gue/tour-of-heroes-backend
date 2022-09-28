@@ -1,4 +1,4 @@
-package com.example.demo.error;
+package com.example.demo.error.resolver;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
