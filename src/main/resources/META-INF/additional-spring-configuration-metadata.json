@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "demo.app.jwtSecret",
+    "type": "java.lang.String",
+    "description": "Hash secret for the jwt algo'"
+  },
+  {
+    "name": "demo.app.jwtExpirationMs",
+    "type": "java.lang.Integer",
+    "description": "Time in ms a jwt token is valid'"
+  }
+]}
