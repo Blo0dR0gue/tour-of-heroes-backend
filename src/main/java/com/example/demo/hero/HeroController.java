@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.AppConstants;
+
 @RestController
-@RequestMapping(path = "api/v1/hero")
+@RequestMapping(path = AppConstants.HERO_URL)
 public class HeroController {
     
     private final HeroService service;

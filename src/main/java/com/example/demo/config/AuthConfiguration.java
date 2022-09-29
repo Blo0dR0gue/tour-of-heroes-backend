@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.example.demo.AppConstants;
 import com.example.demo.auth.jwt.AuthEntryPointJwt;
 import com.example.demo.auth.jwt.AuthTokenFilter;
 import com.example.demo.auth.services.UserDetailsServiceImpl;
@@ -58,10 +59,10 @@ public class AuthConfiguration {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS, "/api/v1/**").permitAll() // allows preflights for secured urls
-                .antMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()    // allows authorization
-                .antMatchers(HttpMethod.POST, "/api/v1/register").permitAll()    // allows register
-                .antMatchers("/api/v1/**").hasAnyRole("ADMIN", "USER")  // secures all rest api urls
+                .antMatchers(HttpMethod.OPTIONS, AppConstants.API_URL_PATTERN).permitAll() // allows preflights for secured urls
+                .antMatchers(HttpMethod.POST, AppConstants.AUTH_URL_PATTERN).permitAll()    // allows authorization
+                .antMatchers(HttpMethod.POST, AppConstants.REGISTER_URL).permitAll()    // allows register
+                .antMatchers(AppConstants.API_URL_PATTERN).hasAnyRole("ADMIN", "USER")  // secures all rest api urls
                 .antMatchers("/**").permitAll() // allows all other urls
                 .anyRequest().authenticated();
 

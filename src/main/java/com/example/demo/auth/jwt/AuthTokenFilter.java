@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.example.demo.AppConstants;
 import com.example.demo.auth.services.UserDetailsImpl;
 import com.example.demo.auth.services.UserDetailsServiceImpl;
 
@@ -35,7 +36,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		log.debug("Authentication Request For '{}'", request.getRequestURL());
 
-		final String requestTokenHeader = request.getHeader("Authorization");
+		final String requestTokenHeader = request.getHeader(AppConstants.AUTH_HEADER);
 
 		String username = null;
 		String jwtToken = null;
