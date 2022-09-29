@@ -1,12 +1,17 @@
 package com.example.demo.role;
 
+import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.example.demo.user.User;
 
 import lombok.Data;
 import lombok.Getter;
@@ -27,6 +32,9 @@ public class Role {
 
     @Enumerated(EnumType.STRING)
     private ERole name;
+
+    @OneToMany(mappedBy="role")
+    private Set<User> users;
 
     public Role(ERole name){
         this.name = name;

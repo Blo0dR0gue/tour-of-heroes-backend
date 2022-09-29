@@ -1,8 +1,5 @@
 package com.example.demo.user;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -43,30 +40,25 @@ public class UserService {
 
         user.setEnabled(true);
 
-        Set<String> strRoles = requestData.getRole();
-        Set<Role> roles = new HashSet<>();
+        String strRole = requestData.getRole();
+        Role role = null;
 
-        if (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+        if (strRole == null) {
+            role = roleRepository.findByName(ERole.ROLE_USER)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
         } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role not found."));
-                        roles.add(adminRole);
-                        break;
-                    default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role not found."));
-                        roles.add(userRole);
-                }
-            });
+            switch (strRole) {
+                case "admin":
+                    role = roleRepository.findByName(ERole.ROLE_ADMIN)
+                            .orElseThrow(() -> new RuntimeException("Error: Role not found."));
+                    break;
+                default:
+                    role = roleRepository.findByName(ERole.ROLE_USER)
+                            .orElseThrow(() -> new RuntimeException("Error: Role not found."));
+            }
         }
 
-        user.setRoles(roles);
+        user.setRole(role);
         userRepository.save(user);
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
