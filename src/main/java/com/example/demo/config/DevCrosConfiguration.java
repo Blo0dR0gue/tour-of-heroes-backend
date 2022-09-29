@@ -13,6 +13,6 @@ public class DevCrosConfiguration implements WebMvcConfigurer {
         registry.addMapping("/api/v1/**")
                 .allowedOrigins("http://localhost:4200")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .exposedHeaders("Authorization");
+                .allowCredentials(true);
     }
 }
