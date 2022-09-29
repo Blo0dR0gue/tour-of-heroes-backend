@@ -7,6 +7,6 @@
   {
     "name": "demo.app.jwtExpirationMs",
     "type": "java.lang.Integer",
-    "description": "Time in ms a jwt token is valid'"
+    "description": "Time in seconds a jwt token is valid'"
   }
 ]}

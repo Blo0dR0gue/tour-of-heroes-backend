@@ -3,6 +3,7 @@ package com.example.demo.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -35,7 +36,7 @@ public class AuthConfiguration {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        //Setup the encoder for passwords
+        // Setup the encoder for passwords
         return new BCryptPasswordEncoder();
     }
 
@@ -48,11 +49,20 @@ public class AuthConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/api/v1/auth/**").permitAll()
-                .antMatchers("/api/v1/**").permitAll()
+        http
+                .cors()
+                .and()
+                .csrf().disable()
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.OPTIONS, "/api/v1/**").permitAll() // allows preflights for secured urls
+                .antMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()    // allows authorization
+                .antMatchers(HttpMethod.POST, "/api/v1/register").permitAll()    // allows register
+                .antMatchers("/api/v1/**").hasAnyRole("ADMIN", "USER")  // secures all rest api urls
+                .antMatchers("/**").permitAll() // allows all other urls
                 .anyRequest().authenticated();
 
         http.addFilterBefore(authenticationJwtTokenFilter, UsernamePasswordAuthenticationFilter.class);

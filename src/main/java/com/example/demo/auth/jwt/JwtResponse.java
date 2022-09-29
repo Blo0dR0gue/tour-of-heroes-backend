@@ -24,4 +24,9 @@ public class JwtResponse {
         this.email = email;
         this.roles = roles;
     }
+
+    public JwtResponse(String accessToken) {
+        this.token = accessToken;
+    }
+
 }

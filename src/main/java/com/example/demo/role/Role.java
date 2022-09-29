@@ -1,5 +1,6 @@
 package com.example.demo.role;
 
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -17,6 +18,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Table
+@Entity
 public class Role {
 
     @Id
