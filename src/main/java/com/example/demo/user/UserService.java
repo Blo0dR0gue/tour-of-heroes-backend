@@ -41,6 +41,8 @@ public class UserService {
                 requestData.getEmail(),
                 passwordEncoder.encode(requestData.getPassword()));
 
+        user.setEnabled(true);
+
         Set<String> strRoles = requestData.getRole();
         Set<Role> roles = new HashSet<>();
 
