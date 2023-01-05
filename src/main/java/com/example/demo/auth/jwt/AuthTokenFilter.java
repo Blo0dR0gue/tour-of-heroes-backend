@@ -58,7 +58,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
 			if (jwtUtils.validateToken(jwtToken, userDetails)) {
 				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-						new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+						new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());	//TODO edit if user isAuthenticated (gen 2fa or not)
 				usernamePasswordAuthenticationToken
 						.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);

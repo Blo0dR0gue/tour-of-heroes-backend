@@ -17,11 +17,15 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtUtils {
 
-	@Value("${demo.app.jwtSecret}")
-	private String jwtSecret;
+    @Value("${demo.app.jwtSecret}")
+    private String jwtSecret;
 
-	@Value("${demo.app.jwtExpiration}")
-	private int jwtExpiration;
+    @Value("${demo.app.jwtExpiration}")
+    private int jwtExpiration;
+
+    // TODO move to constants
+    private static final String AUTHENTICATED = "authenticated";
+    public static final int TEMP_TOKEN_VALIDITY_IN_SECONDS = 300;
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -56,12 +60,13 @@ public class JwtUtils {
 
     public String generateToken(UserDetailsImpl userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        return doGenerateToken(claims, userDetails.getUsername());
+        claims.put(AUTHENTICATED, userDetails.isUsing2FA());    //AUTHENTICATED as claim
+        return doGenerateToken(claims, userDetails.getUsername(), userDetails.isUsing2FA());
     }
 
-    private String doGenerateToken(Map<String, Object> claims, String subject) {
+    private String doGenerateToken(Map<String, Object> claims, String subject, Boolean using2FA) {
         final Date createdDate = new Date();
-        final Date expirationDate = calculateExpirationDate(createdDate);
+        final Date expirationDate = calculateExpirationDate(createdDate, using2FA);
 
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(createdDate)
                 .setExpiration(expirationDate).signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
@@ -73,7 +78,7 @@ public class JwtUtils {
 
     public String refreshToken(String token) {
         final Date createdDate = new Date();
-        final Date expirationDate = calculateExpirationDate(createdDate);
+        final Date expirationDate = calculateExpirationDate(createdDate, false);    //TODO using2FA
 
         final Claims claims = getAllClaimsFromToken(token);
         claims.setIssuedAt(createdDate);
@@ -87,7 +92,13 @@ public class JwtUtils {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    private Date calculateExpirationDate(Date createdDate) {
-        return new Date(createdDate.getTime() + jwtExpiration * 1000);
+    private Date calculateExpirationDate(Date createdDate, Boolean using2FA) {
+        int expirationTime = using2FA ? TEMP_TOKEN_VALIDITY_IN_SECONDS * 1000 : jwtExpiration * 1000;
+        return new Date(createdDate.getTime() + expirationTime);
     }
+
+    public Boolean isAuthenticated(String token) {
+        return this.getAllClaimsFromToken(token).get(AUTHENTICATED, Boolean.class);
+    }
+
 }

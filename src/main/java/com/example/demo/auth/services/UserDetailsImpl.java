@@ -92,6 +92,10 @@ public class UserDetailsImpl implements UserDetails {
         return enabled;
     }
 
+    public boolean isUsing2FA() {
+        return using2FA;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
