@@ -1,36 +1,33 @@
 package com.example.demo.user;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.auth.data.MessageResponse;
 import com.example.demo.auth.data.RegistrationRequestData;
+import com.example.demo.error.UserAlreadyExistAuthenticationException;
 import com.example.demo.role.ERole;
 import com.example.demo.role.Role;
 import com.example.demo.role.RoleRepository;
 
+import dev.samstevens.totp.secret.SecretGenerator;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
+    private SecretGenerator secretGenerator;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public ResponseEntity<?> registerUser(RegistrationRequestData requestData) {
+    public User registerUser(RegistrationRequestData requestData) {
         if (userRepository.existsByUsername(requestData.getUsername())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Username is already taken!"));
+            throw new UserAlreadyExistAuthenticationException("User with Username: " + requestData.getUsername() + " already exist");
         }
 
         if (userRepository.existsByEmail(requestData.getEmail())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Email is already in use!"));
+            throw new UserAlreadyExistAuthenticationException("User with E-Mail: " + requestData.getEmail() + " already exist");
         }
 
         // Create new user's account
@@ -39,6 +36,11 @@ public class UserService {
                 passwordEncoder.encode(requestData.getPassword()));
 
         user.setEnabled(true);
+        if(requestData.isUsing2FA()){
+            user.setUsing2FA(true);
+            user.setSecret(secretGenerator.generate());
+        }
+        
 
         String strRole = requestData.getRole();
         Role role = null;
@@ -60,7 +62,7 @@ public class UserService {
 
         user.setRole(role);
         userRepository.save(user);
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        return user;
     }
 
 }

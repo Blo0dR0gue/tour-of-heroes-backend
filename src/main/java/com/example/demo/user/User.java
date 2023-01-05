@@ -45,6 +45,8 @@ public class User {
 
     private boolean enabled;
 
+    private String secret;
+
     private boolean using2FA;
 
     @ManyToOne

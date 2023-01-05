@@ -42,6 +42,12 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
                 .body(new MessageResponse(ex.getMessage()));
     }
 
+    @ExceptionHandler(UserAlreadyExistAuthenticationException.class)
+    public ResponseEntity<MessageResponse> handleUserAlreadyExistAuthenticationException(UserAlreadyExistAuthenticationException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new MessageResponse(ex.getMessage()));
+    }
+
     /**
      * Creates a {@link ResponseEntity} including an {@link ApiErrorResponse}.
      * 

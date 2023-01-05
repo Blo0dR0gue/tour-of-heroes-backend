@@ -22,18 +22,21 @@ public class UserDetailsImpl implements UserDetails {
 
     private boolean enabled;
 
+    private boolean using2FA;
+
     @JsonIgnore
     private String password;
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(int id, String username, String email, String password, boolean enabled,
+    public UserDetailsImpl(int id, String username, String email, String password, boolean enabled, boolean using2FA,
             Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
         this.enabled = enabled;
+        this.using2FA = using2FA;
         this.authorities = authorities;
     }
 
@@ -43,7 +46,7 @@ public class UserDetailsImpl implements UserDetails {
                 .collect(Collectors.toList());*/
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole().getName().name()));
 
-        return new UserDetailsImpl(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.isEnabled(), authorities);
+        return new UserDetailsImpl(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.isEnabled(), user.isUsing2FA(), authorities);
     };
 
     @Override
