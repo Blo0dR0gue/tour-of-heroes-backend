@@ -45,6 +45,8 @@ public class User {
 
     private boolean enabled;
 
+    private boolean using2FA;
+
     @ManyToOne
     @JoinColumn(name="role_id", nullable = false)
     private Role role;
