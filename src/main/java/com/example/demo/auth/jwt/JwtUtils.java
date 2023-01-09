@@ -8,6 +8,7 @@ import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.example.demo.AppConstants;
 import com.example.demo.auth.services.UserDetailsImpl;
 
 import io.jsonwebtoken.Claims;
@@ -23,9 +24,9 @@ public class JwtUtils {
     @Value("${demo.app.jwtExpiration}")
     private int jwtExpiration;
 
-    // TODO move to constants
-    private static final String AUTHENTICATED = "authenticated";
-    public static final int TEMP_TOKEN_VALIDITY_IN_SECONDS = 300;
+    @Value("${demo.app.twoFATokenValid}")
+    private int twoFATokenValid = 300;
+
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -58,10 +59,10 @@ public class JwtUtils {
         return false;
     }
 
-    public String generateToken(UserDetailsImpl userDetails) {
+    public String generateToken(UserDetailsImpl userDetails, boolean authenticated) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put(AUTHENTICATED, userDetails.isUsing2FA());    //AUTHENTICATED as claim
-        return doGenerateToken(claims, userDetails.getUsername(), userDetails.isUsing2FA());
+        claims.put(AppConstants.AUTHENTICATED, authenticated);    //AUTHENTICATED as claim
+        return doGenerateToken(claims, userDetails.getUsername(), authenticated);
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject, Boolean using2FA) {
@@ -93,12 +94,12 @@ public class JwtUtils {
     }
 
     private Date calculateExpirationDate(Date createdDate, Boolean using2FA) {
-        int expirationTime = using2FA ? TEMP_TOKEN_VALIDITY_IN_SECONDS * 1000 : jwtExpiration * 1000;
+        int expirationTime = using2FA ? twoFATokenValid * 1000 : jwtExpiration * 1000;
         return new Date(createdDate.getTime() + expirationTime);
     }
 
     public Boolean isAuthenticated(String token) {
-        return this.getAllClaimsFromToken(token).get(AUTHENTICATED, Boolean.class);
+        return this.getAllClaimsFromToken(token).get(AppConstants.AUTHENTICATED, Boolean.class);
     }
 
 }

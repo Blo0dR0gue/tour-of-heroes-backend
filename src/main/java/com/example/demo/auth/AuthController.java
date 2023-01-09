@@ -65,13 +65,13 @@ public class AuthController {
 		authenticate(loginRequest.getUsername(), loginRequest.getPassword());
 
 		UserDetailsImpl userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
-		String jwt = jwtUtils.generateToken(userDetails);
+		boolean authenticated = !userDetails.isUsing2FA();
+
+		String jwt = jwtUtils.generateToken(userDetails, authenticated);
 
 		List<String> roles = userDetails.getAuthorities().stream()
 				.map(item -> item.getAuthority())
 				.collect(Collectors.toList());
-
-		boolean authenticated = !userDetails.isUsing2FA();
 
 		return ResponseEntity.ok(new JwtResponse(jwt,
 				userDetails.getId(),
@@ -98,13 +98,13 @@ public class AuthController {
 	}
 
 	@PostMapping("/verify")
-	@PreAuthorize("hasRole('PRE_VERIFICATION_USER')")
+	@PreAuthorize("hasRole('ROLE_PRE_VERIFICATION_USER')")
 	public ResponseEntity<?> verifyCode(@NotEmpty @RequestBody String code,
 			@AuthenticationPrincipal UserDetailsImpl userDetails) throws Invalid2FACodeException {
 		if (!verifier.isValidCode(userDetails.getSecret(), code)) {
 			throw new Invalid2FACodeException("Invalid Code");
 		}
-		String jwt = jwtUtils.generateToken(userDetails);
+		String jwt = jwtUtils.generateToken(userDetails, true);
 
 		List<String> roles = userDetails.getAuthorities().stream()
 				.map(item -> item.getAuthority())

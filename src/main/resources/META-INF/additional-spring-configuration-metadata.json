@@ -7,6 +7,11 @@
   {
     "name": "demo.app.jwtExpirationMs",
     "type": "java.lang.Integer",
-    "description": "Time in seconds a jwt token is valid'"
+    "description": "Time in seconds a jwt token is valid"
+  },
+  {
+    "name": "demo.app.twoFATokenValid",
+    "type": "java.lang.String",
+    "description": "Time in seconds a temp 2FA token is valid"
   }
 ]}

@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.auth.data.MessageResponse;
 import com.example.demo.auth.data.RegistrationRequestData;
 import com.example.demo.auth.data.SignUpResponse;
 import com.example.demo.user.User;
@@ -45,6 +44,6 @@ public class RegistrationController {
                 e.printStackTrace();
             }
         }
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        return ResponseEntity.ok(new SignUpResponse(false, null));
     }
 }
