@@ -97,7 +97,6 @@ public class AuthController {
 		}
 	}
 
-	//TODO: verify 2fa code bevor creating the account.
 	@PostMapping("/verify")
 	@PreAuthorize("hasRole('ROLE_PRE_VERIFICATION_USER')")
 	public ResponseEntity<?> verifyCode(@NotEmpty @RequestBody String code,

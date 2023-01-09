@@ -31,6 +31,7 @@ public class RegistrationController {
     @Autowired
     private QrGenerator qrGenerator;
 
+    	//TODO: verify 2fa code bevor creating the account.
     @PostMapping("/api/v1/register")
     public ResponseEntity<?> registerUser(@RequestBody @Valid RegistrationRequestData requestData) {
         User user = userService.registerUser(requestData);
