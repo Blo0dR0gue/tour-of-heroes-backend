@@ -14,6 +14,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import com.example.demo.auth.data.MessageResponse;
 import com.example.demo.error.apierror.ApiErrorResponse;
 
+import dev.samstevens.totp.exceptions.QrGenerationException;
+
 @ControllerAdvice
 public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 
@@ -46,6 +48,16 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     public ResponseEntity<MessageResponse> handleUserAlreadyExistAuthenticationException(UserAlreadyExistAuthenticationException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new MessageResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(QrGenerationException.class)
+    public ResponseEntity<Object> handleQrGenerationException(QrGenerationException ex) {
+        return buildErrorResponse(ex, "QrGeneration failed", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(Invalid2FACodeException.class)
+    public ResponseEntity<Object> Invalid2FACodeExceptionException(Invalid2FACodeException ex) {
+        return buildErrorResponse(ex, "Invalid Code", HttpStatus.BAD_REQUEST);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.example.demo.auth.jwt;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.example.demo.AppConstants;
 import com.example.demo.auth.services.UserDetailsImpl;
 import com.example.demo.auth.services.UserDetailsServiceImpl;
+import com.example.demo.role.ERole;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +61,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
 			if (jwtUtils.validateToken(jwtToken, userDetails)) {
 				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-						new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());	//TODO edit if user isAuthenticated (gen 2fa or not)
+						new UsernamePasswordAuthenticationToken(userDetails, null, 
+						// add user to pre verification if user uses 2fa. User can only access /verify
+						jwtUtils.isAuthenticated(jwtToken) ? userDetails.getAuthorities() : List.of(new SimpleGrantedAuthority(ERole.ROLE_PRE_VERIFICATION_USER.name().toString())));
 				usernamePasswordAuthenticationToken
 						.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
