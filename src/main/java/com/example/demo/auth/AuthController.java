@@ -35,7 +35,6 @@ import com.example.demo.auth.services.UserDetailsServiceImpl;
 import com.example.demo.error.AuthenticationException;
 import com.example.demo.error.Invalid2FACodeException;
 import com.example.demo.role.RoleRepository;
-import com.example.demo.user.User;
 import com.example.demo.user.UserRepository;
 import com.example.demo.user.UserService;
 
@@ -136,22 +135,32 @@ public class AuthController {
 				true));
 	}
 
-	// TODO: verify 2fa code bevor creating the account.
 	@PostMapping("/register")
-	public ResponseEntity<?> registerUser(@RequestBody @Valid RegistrationRequestData requestData) {
-		User user = userService.registerUser(requestData);
-		if (user.isUsing2FA()) {
-			QrData data = qrDataFactory.newBuilder().label(user.getEmail()).secret(user.getSecret()).issuer("Panomenal")
+	public ResponseEntity<?> registerUser(@RequestBody @Valid RegistrationRequestData requestData) throws Invalid2FACodeException {
+		if (!requestData.isUsing2FA()) { // Register without 2FA.
+			userService.registerUser(requestData);
+			return ResponseEntity.ok(new SignUpResponse(false, null, null, true));
+		} else if (requestData.isUsing2FA() && requestData.getCode() == null) { // First submit 2FA
+			userService.checkIfUserExists(requestData.getUsername(), requestData.getEmail());
+			String secret = userService.generate2FASecret();
+			QrData data = qrDataFactory.newBuilder().label(requestData.getEmail()).secret(secret).issuer("Panomenal")
 					.build();
 			// Generate the QR code image data as a base64 string
 			try {
 				String qrCodeImg = getDataUriForImage(qrGenerator.generate(data), qrGenerator.getImageMimeType());
-				return ResponseEntity.ok().body(new SignUpResponse(true, qrCodeImg));
+				return ResponseEntity.ok().body(new SignUpResponse(true, qrCodeImg, secret, false));
 			} catch (QrGenerationException e) {
 				e.printStackTrace();
 			}
+		} else { // Second submit 2FA
+			if (!verifier.isValidCode(requestData.getSecret(), requestData.getCode())) {
+				return ResponseEntity.ok(new SignUpResponse(true, null, null, false));
+			} else {
+				userService.registerUser(requestData);
+				return ResponseEntity.ok(new SignUpResponse(true, null, null, true));
+			}
 		}
-		return ResponseEntity.ok(new SignUpResponse(false, null));
+		return null;
 	}
 
 	private void authenticate(String username, String password) {

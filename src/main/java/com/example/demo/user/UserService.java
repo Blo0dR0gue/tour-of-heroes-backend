@@ -24,16 +24,24 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public User registerUser(RegistrationRequestData requestData) {
-        if (userRepository.existsByUsername(requestData.getUsername())) {
+    public String generate2FASecret() {
+        return secretGenerator.generate();
+    }
+
+    public void checkIfUserExists(String username, String email){
+        if (userRepository.existsByUsername(username)) {
             throw new UserAlreadyExistAuthenticationException(
-                    "User with Username: " + requestData.getUsername() + " already exist");
+                    "User with Username: " + username + " already exist");
         }
 
-        if (userRepository.existsByEmail(requestData.getEmail())) {
+        if (userRepository.existsByEmail(email)) {
             throw new UserAlreadyExistAuthenticationException(
-                    "User with E-Mail: " + requestData.getEmail() + " already exist");
+                    "User with E-Mail: " + email + " already exist");
         }
+    }
+
+    public User registerUser(RegistrationRequestData requestData) {
+        this.checkIfUserExists(requestData.getUsername(), requestData.getEmail());
 
         // Create new user's account
         User user = new User(requestData.getUsername(),
@@ -41,9 +49,10 @@ public class UserService {
                 passwordEncoder.encode(requestData.getPassword()));
 
         user.setEnabled(true);
+
         if (requestData.isUsing2FA()) {
             user.setUsing2FA(true);
-            user.setSecret(secretGenerator.generate());
+            user.setSecret(requestData.getSecret());
         }
 
         String strRole = requestData.getRole();

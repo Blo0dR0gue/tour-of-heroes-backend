@@ -26,4 +26,6 @@ public class RegistrationRequestData {
     private String password;
 
     private boolean using2FA;
+    private String secret;
+    private String code;
 }

@@ -5,7 +5,7 @@
     "description": "Hash secret for the jwt algo'"
   },
   {
-    "name": "demo.app.jwtExpirationMs",
+    "name": "demo.app.jwtExpiration",
     "type": "java.lang.Integer",
     "description": "Time in seconds a jwt token is valid"
   },
