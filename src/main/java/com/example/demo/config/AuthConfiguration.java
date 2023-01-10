@@ -61,7 +61,6 @@ public class AuthConfiguration {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, AppConstants.API_URL_PATTERN).permitAll() // allows preflights for secured urls
                 .antMatchers(HttpMethod.POST, AppConstants.AUTH_URL_PATTERN).permitAll()    // allows authorization
-                .antMatchers(HttpMethod.POST, AppConstants.REGISTER_URL).permitAll()    // allows register
                 .antMatchers(AppConstants.API_URL_PATTERN).hasAnyRole("ADMIN", "USER")  // secures all rest api urls
                 .antMatchers("/**").permitAll() // allows all other urls
                 .anyRequest().authenticated();

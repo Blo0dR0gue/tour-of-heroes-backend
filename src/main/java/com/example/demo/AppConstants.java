@@ -7,7 +7,6 @@ public class AppConstants {
     public static final String AUTH_URL = API_URL + "/auth";
 
     public static final String HERO_URL = API_URL + "/hero";
-    public static final String REGISTER_URL = API_URL + "/register";
     public static final String API_URL_PATTERN = API_URL + "/**";
     public static final String AUTH_URL_PATTERN = AUTH_URL + "/**";
 }

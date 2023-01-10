@@ -60,7 +60,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 			UserDetailsImpl userDetails = userDetailsService.loadUserByUsername(username);
 
 			if (jwtUtils.validateToken(jwtToken, userDetails)) {
-				Boolean test = jwtUtils.isAuthenticated(jwtToken);
 				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
 						new UsernamePasswordAuthenticationToken(userDetails, null, 
 						// add user to pre verification if user uses 2fa. User can only access /verify

@@ -26,11 +26,13 @@ public class UserService {
 
     public User registerUser(RegistrationRequestData requestData) {
         if (userRepository.existsByUsername(requestData.getUsername())) {
-            throw new UserAlreadyExistAuthenticationException("User with Username: " + requestData.getUsername() + " already exist");
+            throw new UserAlreadyExistAuthenticationException(
+                    "User with Username: " + requestData.getUsername() + " already exist");
         }
 
         if (userRepository.existsByEmail(requestData.getEmail())) {
-            throw new UserAlreadyExistAuthenticationException("User with E-Mail: " + requestData.getEmail() + " already exist");
+            throw new UserAlreadyExistAuthenticationException(
+                    "User with E-Mail: " + requestData.getEmail() + " already exist");
         }
 
         // Create new user's account
@@ -39,11 +41,10 @@ public class UserService {
                 passwordEncoder.encode(requestData.getPassword()));
 
         user.setEnabled(true);
-        if(requestData.isUsing2FA()){
+        if (requestData.isUsing2FA()) {
             user.setUsing2FA(true);
             user.setSecret(secretGenerator.generate());
         }
-        
 
         String strRole = requestData.getRole();
         Role role = null;

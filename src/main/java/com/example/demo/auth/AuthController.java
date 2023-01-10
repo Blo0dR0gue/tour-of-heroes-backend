@@ -1,5 +1,7 @@
 package com.example.demo.auth;
 
+import static dev.samstevens.totp.util.Utils.getDataUriForImage;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -24,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.demo.AppConstants;
 import com.example.demo.auth.data.LoginRequestData;
+import com.example.demo.auth.data.RegistrationRequestData;
+import com.example.demo.auth.data.SignUpResponse;
 import com.example.demo.auth.jwt.JwtResponse;
 import com.example.demo.auth.jwt.JwtUtils;
 import com.example.demo.auth.services.UserDetailsImpl;
@@ -31,9 +35,15 @@ import com.example.demo.auth.services.UserDetailsServiceImpl;
 import com.example.demo.error.AuthenticationException;
 import com.example.demo.error.Invalid2FACodeException;
 import com.example.demo.role.RoleRepository;
+import com.example.demo.user.User;
 import com.example.demo.user.UserRepository;
+import com.example.demo.user.UserService;
 
 import dev.samstevens.totp.code.CodeVerifier;
+import dev.samstevens.totp.exceptions.QrGenerationException;
+import dev.samstevens.totp.qr.QrData;
+import dev.samstevens.totp.qr.QrDataFactory;
+import dev.samstevens.totp.qr.QrGenerator;
 
 @Controller
 @RequestMapping(path = AppConstants.AUTH_URL)
@@ -56,6 +66,14 @@ public class AuthController {
 
 	@Autowired
 	UserDetailsServiceImpl userDetailsService;
+
+	@Autowired
+	private UserService userService;
+
+	@Autowired
+	private QrDataFactory qrDataFactory;
+	@Autowired
+	private QrGenerator qrGenerator;
 
 	@Autowired
 	CodeVerifier verifier;
@@ -116,6 +134,24 @@ public class AuthController {
 				userDetails.getEmail(),
 				roles,
 				true));
+	}
+
+	// TODO: verify 2fa code bevor creating the account.
+	@PostMapping("/register")
+	public ResponseEntity<?> registerUser(@RequestBody @Valid RegistrationRequestData requestData) {
+		User user = userService.registerUser(requestData);
+		if (user.isUsing2FA()) {
+			QrData data = qrDataFactory.newBuilder().label(user.getEmail()).secret(user.getSecret()).issuer("Panomenal")
+					.build();
+			// Generate the QR code image data as a base64 string
+			try {
+				String qrCodeImg = getDataUriForImage(qrGenerator.generate(data), qrGenerator.getImageMimeType());
+				return ResponseEntity.ok().body(new SignUpResponse(true, qrCodeImg));
+			} catch (QrGenerationException e) {
+				e.printStackTrace();
+			}
+		}
+		return ResponseEntity.ok(new SignUpResponse(false, null));
 	}
 
 	private void authenticate(String username, String password) {
